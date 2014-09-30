@@ -1,0 +1,20 @@
+<html>
+	<head>
+		<script type="text/javascript" src="../../bower_components/react/react.js"></script>
+		<script type="text/javascript" src="../../bower_components/react/JSXTransformer.js"></script>
+		<script type="text/javascript" src="../../bower_components/HTMLImports/src/html-imports.js"></script>
+		<link rel="import" type="text/html" href="../../dist/components/my-button/index.html" />
+
+
+		<script type="text/jsx">
+			/** @jsx React.DOM */
+			window.addEventListener('HTMLImportsLoaded', function(e) {
+				React.renderComponent( my_button(), document.getElementById('container'));
+			});
+		</script>
+
+	</head>
+	<body id="container">
+
+	</body>
+</html>

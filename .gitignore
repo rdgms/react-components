@@ -1,0 +1,15 @@
+*.orig
+node_modules
+.monitor
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Icon?
+Thumbs.db
+*.log
+*~
+.migrate
+bower_components
+dist
