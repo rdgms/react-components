@@ -2,15 +2,15 @@ var gulp = require('gulp');
 var react = require('gulp-react');
 var uglify = require('gulp-uglify');
 var browserSync = require('browser-sync');
-
+var concat = require('gulp-concat');
 
 gulp.task('clean-dist-folder', require('del').bind(null, ['.tmp', 'dist']));
 
 gulp.task('browser-sync', function() {
     browserSync({
         server: {
-            baseDir: "./",
-            index:"dist/components/examples.html"
+            baseDir: "./dist",
+            index:"examples.html"
         }
     });
 });
@@ -26,7 +26,7 @@ gulp.task('parse-and-minify-react-components', function() {
 });
 
 gulp.task('copy-html-components', function() {
-	return gulp.src(["components/**/*.html"],{base:"./"})
+	return gulp.src(["components/**/*.html","!components/examples.html"],{base:"./"})
 		.pipe(gulp.dest('dist'));
 });
 
@@ -39,16 +39,24 @@ gulp.task('copy-css-components', function() {
 	Copiando o exemplo para a pasta dist
 */
 gulp.task('copy-example', function() {
-	return gulp.src(["components/example.*"],{base:"./"})
-		.pipe(gulp.dest('dist'));
+	return gulp.src(["components/examples.html"])
+		.pipe(gulp.dest('./dist/'));
 });
+
 
 /**
 	Processando as dependencias do bower
 */
 gulp.task('copy-bower-components', function() {
-	return gulp.src(["bower_components/**/*.js"],{base:"./"})
-		.pipe(gulp.dest('dist'));
+	return gulp.src([
+			"bower_components/react/react.js",
+			"bower_components/HTMLImports/src/html-imports.js",
+			"bower_components/CustomElements/src/custom-elements.js",
+			"bower_components/ReactiveElements/src/reactive-elements.js"
+		],{base:"./"})
+			.pipe(uglify())
+			.pipe(concat('react-component.js'))
+			.pipe(gulp.dest('dist'));
 });
 
 
