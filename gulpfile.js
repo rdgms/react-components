@@ -1,13 +1,27 @@
 var gulp = require('gulp');
-var react = require('gulp-react');
-var uglify = require('gulp-uglify');
 var browserSync = require('browser-sync');
-var concat = require('gulp-concat');
+var reload = browserSync.reload;
+var $ = require('gulp-load-plugins')();
+
+var AUTOPREFIXER_BROWSERS = [
+  'ie >= 10',
+  'ie_mob >= 10',
+  'ff >= 30',
+  'chrome >= 34',
+  'safari >= 7',
+  'opera >= 23',
+  'ios >= 7',
+  'android >= 4.4',
+  'bb >= 10'
+];
+
 
 gulp.task('clean-dist-folder', require('del').bind(null, ['.tmp', 'dist']));
 
 gulp.task('browser-sync', function() {
     browserSync({
+    	notify: false,
+    	logPrefix: 'Verios',
         server: {
             baseDir: "./dist",
             index:"examples.html"
@@ -20,8 +34,8 @@ gulp.task('browser-sync', function() {
 */
 gulp.task('parse-and-minify-react-components', function() {
 	return gulp.src(["components/**/*.jsx"],{base:"./"})
-		.pipe(react())
-		.pipe(uglify())
+		.pipe($.react())
+		.pipe($.uglify())
 		.pipe(gulp.dest('dist'));
 });
 
@@ -31,9 +45,17 @@ gulp.task('copy-html-components', function() {
 });
 
 gulp.task('copy-css-components', function() {
-	return gulp.src(["components/**/*.css"],{base:"./"})
-		.pipe(gulp.dest('dist'));
+	return gulp.src(["components/**/*.scss"],{base:"./"})
+		.pipe($.changed('styles', {extension: '.scss'}))
+		.pipe($.sass())
+		.on('error', console.error.bind(console))
+		.pipe($.autoprefixer({browsers: AUTOPREFIXER_BROWSERS}))
+		.pipe(gulp.dest('dist'))
+		.pipe($.if('*.css', $.csso()))
+		.pipe(gulp.dest('dist'))
+		.pipe($.size({title: 'styles'}));
 });
+
 
 /**
 	Copiando o exemplo para a pasta dist
@@ -54,8 +76,8 @@ gulp.task('copy-bower-components', function() {
 			"bower_components/CustomElements/src/custom-elements.js",
 			"bower_components/ReactiveElements/src/reactive-elements.js"
 		],{base:"./"})
-			.pipe(uglify())
-			.pipe(concat('react-component.js'))
+			.pipe($.uglify())
+			.pipe($.concat('react-component.js'))
 			.pipe(gulp.dest('dist'));
 });
 
